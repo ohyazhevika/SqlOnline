@@ -1,10 +1,7 @@
 package com.example.sqlonline.controllers;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class SQLRunner {
     private final String connectionURL;
@@ -15,11 +12,16 @@ public class SQLRunner {
         try {
             Connection connection = DriverManager.getConnection(connectionURL);
             Statement statement = connection.createStatement();
-            statement.addBatch(query);
-            statement.executeBatch();
-            return "!";
+            boolean hasMoreResults = statement.execute(query);
+            StringBuilder sb = new StringBuilder();
+            while (hasMoreResults) {
+                ResultSet rs = statement.getResultSet();
+                sb.append(rs);
+                hasMoreResults = statement.getMoreResults();
+            }
+            return sb.toString();
         } catch (SQLException e) {
-            return "";
+            return e.getSQLState();
         }
     }
 }

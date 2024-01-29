@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Soqol Sql main page</title>
+</head>
+<body>
+<div>
+    <h2>SQL Editor</h2>
+    <form th:action="@{/RunSql}" method="post">
+        <textarea name="query" cols="50" rows="10"></textarea>
+        <br> <input type="submit" value="Run sql" />
+    </form>
+    <div>
+        <h2>Query Result</h2>
+        <ul th:each="note : ${notesSession}">
+            <li th:text="${note}">note</li>
+        </ul>
+        <h3 th:text="${queryResult}">
+        </h3>
+    </div>
+</div>
+</body>
+</html>
