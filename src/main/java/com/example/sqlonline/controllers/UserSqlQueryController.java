@@ -1,7 +1,9 @@
 package com.example.sqlonline.controllers;
 
+import com.example.sqlonline.utils.sql.SQLRunner;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +12,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserSqlQueryController {
-    private final SQLRunner sqlRunner = new SQLRunner("jdbc:soqol://SOQOL:SOQOL@localhost:2060/DB");
+
+    private final SQLRunner sqlRunner;
+    @Autowired
+    public UserSqlQueryController(SQLRunner sqlRunner) {
+        this.sqlRunner = sqlRunner;
+    }
     @PostMapping("/RunSql")
     public String runQuery(@RequestParam("query") String query, HttpServletRequest request) {
-        String queryResult = sqlRunner.execute(query);
+        String queryResult;
+        try {
+            queryResult = sqlRunner.execute(query);
+        } catch (Exception e) {
+            queryResult = e.getMessage();
+        }
         request.getSession().setAttribute("QUERY_RESULT", queryResult);
         request.getSession().setAttribute("QUERY", query);
         return "redirect:/ShowSql";
