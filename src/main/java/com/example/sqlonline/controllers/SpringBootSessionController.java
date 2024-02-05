@@ -32,7 +32,7 @@ public class SpringBootSessionController {
     @GetMapping("/home")
     public String home(Model model, HttpSession session) {
         List<String> notes = (List<String>) session.getAttribute("NOTES_SESSION");
-        model.addAttribute("notesSession", notes!=null? notes:new ArrayList<>());
+        model.addAttribute("notesSession", notes != null ? notes:new ArrayList<>());
         return "home";
     }
     @PostMapping("/invalidate/session")

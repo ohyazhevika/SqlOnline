@@ -1,15 +1,25 @@
 package com.example.sqlonline.utils.sql;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Driver;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+
+@Component
 public class DriversMapper {
+
+    //todo: there's not only driver jar info that we need to create connection from driver shim: specifier url pattern, host+port
     private final Map<String, Driver> drivers = new HashMap<>();
-    public DriversMapper(DriverJarInfo ... driversInfo) throws Exception {
+
+    @Autowired
+    public DriversMapper(List<DriverJarInfo> driversInfo) throws Exception {
         for (DriverJarInfo dji: driversInfo) {
             put(dji);
         }

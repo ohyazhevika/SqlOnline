@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Versions</title>
+</head>
+<body>
+<div>
+    <h2>Choose version to test!</h2>
+    <form th:action="@{/ChooseVersion}" method="post">
+        <div th:each="v : ${versions}">
+            <input type="submit" name="version" th:value="${v}"/>
+        </div>
+    <ul th:each="version : ${versions}">
+        <li th:text="${version}">version</li>
+    </ul>
+    </form>
+</div>
+
+</body>
+</html>

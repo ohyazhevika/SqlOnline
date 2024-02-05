@@ -1,5 +1,8 @@
 package com.example.sqlonline.utils.sql;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
@@ -7,9 +10,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+@Component
 public class DriverShim implements Driver {
     private final DriversMapper driverMapper;
 
+    @Autowired
     public DriverShim(DriversMapper driverMapper) {
         this.driverMapper = driverMapper;
     }

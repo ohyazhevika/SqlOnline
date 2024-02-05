@@ -1,5 +1,5 @@
 package com.example.sqlonline.utils.sql;
 
 public interface SQLRunner {
-    String execute(String query) throws Exception;
+    String execute(String connectionUrl, String query) throws Exception;
 }
