@@ -9,7 +9,6 @@ import java.util.Properties;
 
 @Component
 public class SQLRunnerImpl implements SQLRunner {
-    //private final String connectionURL =  "jdbc:soqol://SOQOL:SOQOL@localhost:2060/DB";
     private final DriverShim driverShim;
 
     @Autowired
