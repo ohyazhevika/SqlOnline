@@ -1,0 +1,5 @@
+service:
+  drivers:
+    soqol1:
+      jarpath: D:\\soqol\\bin\\soqol-jdbc-2.0.1.jar
+      classname: ru.relex.soqol.jdbc.Driver

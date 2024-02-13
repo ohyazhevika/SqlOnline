@@ -1,23 +1,24 @@
 package com.example.sqlonline.controllers;
 
 
+import com.example.sqlonline.utils.sql.DriversMapper;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class GetStartedController {
     private final List<String> versions;
 
-    public GetStartedController() {
-        versions = new ArrayList<>();
-        versions.add("soqol1");
+    @Autowired
+    public GetStartedController(DriversMapper mapper) {
+        versions = mapper.getVersions();
     }
 
     @GetMapping("/ShowVersions")
