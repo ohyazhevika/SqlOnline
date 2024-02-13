@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 public class DriversMapper {
 
-    //todo: there's not only driver jar info that we need to create connection from driver shim: specify url pattern, host+port
+    //todo: there's not only driver jar info that is required in order to create connection using driver shim: specify url pattern, host+port
     private final Map<String, Driver> drivers = new HashMap<>();
 
     @Autowired
