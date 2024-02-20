@@ -1,6 +1,7 @@
 package com.example.sqlonline.controllers;
 
 import com.example.sqlonline.utils.sql.SQLRunner;
+import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserSqlQueryController {
+    private DatabaseServiceManager databaseServiceManager;
     private final SQLRunner sqlRunner;
     @Autowired
     public UserSqlQueryController(SQLRunner sqlRunner) {
