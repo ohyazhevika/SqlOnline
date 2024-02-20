@@ -1,7 +1,7 @@
 package com.example.sqlonline.controllers;
 
 
-import com.example.sqlonline.utils.sql.DriversMapper;
+import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +17,8 @@ public class GetStartedController {
     private final List<String> versions;
 
     @Autowired
-    public GetStartedController(DriversMapper mapper) {
-        versions = mapper.getVersions();
+    public GetStartedController(DatabaseServiceManager databaseServiceManager) {
+        versions = databaseServiceManager.getServicesIds();
     }
 
     @GetMapping("/ShowVersions")

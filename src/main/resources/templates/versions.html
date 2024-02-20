@@ -11,9 +11,6 @@
         <div th:each="v : ${versions}">
             <input type="submit" name="version" th:value="${v}"/>
         </div>
-    <ul th:each="version : ${versions}">
-        <li th:text="${version}">version</li>
-    </ul>
     </form>
 </div>
 

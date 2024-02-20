@@ -1,29 +1,22 @@
 package com.example.sqlonline.utils.sql.query;
 
-import com.example.sqlonline.utils.sql.query.SqlQueryRunner;
+import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class SqlQueryRunnerImpl implements SqlQueryRunner {
-    private DataSource dataSource;
-    public SqlQueryRunnerImpl(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
     @Override
-    public QueryResult execute(String query) {
+    public QueryResult execute(Connection c, String query) {
         QueryResult queryResult = new QueryResult();
-        try (Connection c = dataSource.getConnection();
-             Statement statement = c.createStatement()
+        try (
+                Statement statement = c.createStatement()
         ) {
             statement.execute(query);
             ResultSet rs = statement.getResultSet();
-            while (rs != null) {
-                queryResult.rows.addAll(processResultSet(rs));
-                rs = statement.getResultSet();
-            }
+            queryResult.rows.addAll(processResultSet(rs));
 
         } catch (SQLException e) {
             queryResult.errorCode = 1;
@@ -34,6 +27,7 @@ public class SqlQueryRunnerImpl implements SqlQueryRunner {
 
     private List<String> processResultSet(ResultSet rs) throws SQLException {
         List<String> rows = new ArrayList<>();
+        if (rs == null) return rows;
         ResultSetMetaData rsmd = rs.getMetaData();
         int columnsNumber = rsmd.getColumnCount();
         StringBuilder sb = new StringBuilder();
