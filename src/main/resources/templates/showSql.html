@@ -13,11 +13,10 @@
     </form>
     <div>
         <h2>Query Result</h2>
-        <ul th:each="note : ${notesSession}">
-            <li th:text="${note}">note</li>
+        <h3 th:text="${errorMessage}"></h3>
+        <ul th:each="row : ${rows}">
+            <li th:text="${row}">row</li>
         </ul>
-        <h3 th:text="${queryResult}">
-        </h3>
     </div>
 </div>
 </body>
