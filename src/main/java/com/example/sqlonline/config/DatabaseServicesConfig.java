@@ -2,7 +2,7 @@ package com.example.sqlonline.config;
 
 import com.example.sqlonline.utils.sql.DriverJarInfos;
 import com.example.sqlonline.utils.sql.dbservice.DatabaseService;
-import com.example.sqlonline.utils.sql.dbservice.SoqolDatabaseService;
+import com.example.sqlonline.utils.sql.dbservice.impl.SoqolDatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

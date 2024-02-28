@@ -1,5 +1,8 @@
-package com.example.sqlonline.utils.sql.dbservice;
+package com.example.sqlonline.utils.sql.dbservice.impl;
 
+
+import com.example.sqlonline.utils.sql.dbservice.DatabaseService;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -17,7 +20,7 @@ public class SoqolDatabaseService implements DatabaseService {
     }
     @Override
     public void startup() {
-
+        ScriptUtils u;
     }
 
     @Override

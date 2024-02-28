@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UserSqlQueryController {
@@ -24,15 +26,14 @@ public class UserSqlQueryController {
     }
     @PostMapping("/RunSql")
     public String runQuery(@RequestParam("query") String query, HttpSession session) {
-        QueryResult queryResult;
+        List<QueryResult> queryResults;
 
         Connection connection = databaseServiceManager.getConnection(session);
-        queryResult = sqlQueryRunner.execute(connection, query);
+        queryResults = sqlQueryRunner.execute(connection, query);
 
-        session.setAttribute("ERROR_MESSAGE", queryResult.errorMessage);
-        session.setAttribute("ROWS", queryResult.rows);
         //todo: query result should be updated on page refresh
         session.setAttribute("QUERY", query);
+        session.setAttribute("QUERY_RESULT", queryResults);
         return "redirect:/ShowSql";
     }
 
@@ -40,8 +41,10 @@ public class UserSqlQueryController {
     public String show(Model model, HttpSession session) {
         //todo: add some nicer presentation of query results
         model.addAttribute("query", session.getAttribute("QUERY"));
-        model.addAttribute("errorMessage", session.getAttribute("ERROR_MESSAGE"));
-        model.addAttribute("rows", session.getAttribute("ROWS"));
+        Object q = session.getAttribute("QUERY_RESULT");
+        if (q == null)
+            q = new ArrayList<QueryResult>();
+        model.addAttribute("queryResults", q);
 
         return "showSql";
     }

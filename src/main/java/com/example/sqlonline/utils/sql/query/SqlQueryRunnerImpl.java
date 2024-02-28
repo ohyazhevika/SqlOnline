@@ -1,5 +1,7 @@
 package com.example.sqlonline.utils.sql.query;
 
+import com.example.sqlonline.utils.sql.parser.SqlScriptParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -8,22 +10,38 @@ import java.util.List;
 
 @Component
 public class SqlQueryRunnerImpl implements SqlQueryRunner {
+    private final SqlScriptParser parser;
+    @Autowired
+    public SqlQueryRunnerImpl(SqlScriptParser parser) {
+        this.parser = parser;
+    }
+
     @Override
-    public QueryResult execute(Connection c, String query) {
-        QueryResult queryResult = new QueryResult();
+    public List<QueryResult> execute(Connection c, String sql) {
+        List<QueryResult> queryResults = new ArrayList<>();
         try (
                 Statement statement = c.createStatement()
         ) {
-            statement.execute(query);
-            ResultSet rs = statement.getResultSet();
-            queryResult.rows.addAll(processResultSet(rs));
+            List<String> queries = parser.parse(sql);
+            for (String query: queries) {
+                ResultSet rs = statement.executeQuery(query);
+                QueryResult queryResult = new QueryResult();
+                if (rs != null) {
+                    queryResult.rows.addAll(processResultSet(rs));
+                    rs.close();
+                }
+                queryResults.add(queryResult);
+            }
 
         } catch (SQLException e) {
-            queryResult.errorCode = 1;
-            queryResult.errorMessage = e.getMessage();
+            QueryResult qr = new QueryResult();
+            qr.errorCode = 1;
+            qr.errorMessage = e.getMessage();
+            queryResults.add(qr);
         }
-        return queryResult;
+        return queryResults;
     }
+
 
     private List<String> processResultSet(ResultSet rs) throws SQLException {
         List<String> rows = new ArrayList<>();

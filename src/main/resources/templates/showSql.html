@@ -12,11 +12,14 @@
         <br> <input type="submit" value="Run sql" />
     </form>
     <div>
-        <h2>Query Result</h2>
-        <h3 th:text="${errorMessage}"></h3>
-        <ul th:each="row : ${rows}">
-            <li th:text="${row}">row</li>
-        </ul>
+        <h2>Query Results</h2>
+        <div th:each="qr: ${queryResults}">
+            <h3 th:text="${qr.errorMessage}"></h3>
+            <div th:each="row: ${qr.rows}">
+                <div th:text="${row}">row</div>
+            </div>
+            <h3 th:text="-------------------"></h3>
+        </div>
     </div>
 </div>
 </body>
