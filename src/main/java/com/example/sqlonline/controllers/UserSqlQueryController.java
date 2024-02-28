@@ -2,7 +2,7 @@ package com.example.sqlonline.controllers;
 
 import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
 import com.example.sqlonline.utils.sql.query.QueryResult;
-import com.example.sqlonline.utils.sql.query.SqlQueryRunner;
+import com.example.sqlonline.utils.sql.query.SqlScriptRunner;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,10 +18,10 @@ import java.util.List;
 @Controller
 public class UserSqlQueryController {
     private final DatabaseServiceManager databaseServiceManager;
-    private final SqlQueryRunner sqlQueryRunner;
+    private final SqlScriptRunner sqlScriptRunner;
     @Autowired
-    public UserSqlQueryController(SqlQueryRunner sqlQueryRunner, DatabaseServiceManager databaseServiceManager) {
-        this.sqlQueryRunner = sqlQueryRunner;
+    public UserSqlQueryController(SqlScriptRunner sqlScriptRunner, DatabaseServiceManager databaseServiceManager) {
+        this.sqlScriptRunner = sqlScriptRunner;
         this.databaseServiceManager = databaseServiceManager;
     }
     @PostMapping("/RunSql")
@@ -29,7 +29,7 @@ public class UserSqlQueryController {
         List<QueryResult> queryResults;
 
         Connection connection = databaseServiceManager.getConnection(session);
-        queryResults = sqlQueryRunner.execute(connection, query);
+        queryResults = sqlScriptRunner.execute(connection, query);
 
         //todo: query result should be updated on page refresh
         session.setAttribute("QUERY", query);

@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class SqlQueryRunnerImpl implements SqlQueryRunner {
+public class SqlScriptRunnerImpl implements SqlScriptRunner {
     private final SqlScriptParser parser;
     @Autowired
-    public SqlQueryRunnerImpl(SqlScriptParser parser) {
+    public SqlScriptRunnerImpl(SqlScriptParser parser) {
         this.parser = parser;
     }
 
