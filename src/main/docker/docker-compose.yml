@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  soqol301:
+    build:
+      context: ./distr/soqol_3.0-1_Linux_x86_64
+      dockerfile: ./Dockerfile
+    ports:
+      - "2060:2060"
+  soqol31night240305:
+    build:
+      context: ./distr/soqol_3.1-night240305_Linux_x86_64
+      dockerfile: ./Dockerfile
+    ports:
+      - "2061:2061"

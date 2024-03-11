@@ -1,0 +1,33 @@
+# $prolog
+
+[Unit]
+Description=LINTER-SOQOL Server
+#Documentation=http://soqol.ru/doc/ru/using-systemd.html
+After=network.target
+After=syslog.target
+RequiresMountsFor=/var/lib/soqol
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=soqol
+Group=soqol
+WorkingDirectory=/var/lib/soqol
+
+Type=notify
+
+# Disable service start and stop timeout logic of systemd for LINTER-SOQOL service.
+TimeoutSec=0
+TimeoutStopSec=1h
+SyslogIdentifier=soqol
+
+# Disable OOM killing 
+OOMScoreAdjust=-1000
+
+# Start main service
+ExecStart=/opt/soqol/bin/vsql_server -c/var/lib/soqol/soqol_config.yml
+
+# Sets open_files_limit and memory_lock_limit
+LimitNOFILE = infinity
+LimitMEMLOCK = infinity

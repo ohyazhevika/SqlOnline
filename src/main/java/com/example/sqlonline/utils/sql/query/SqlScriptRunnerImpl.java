@@ -17,27 +17,33 @@ public class SqlScriptRunnerImpl implements SqlScriptRunner {
     }
 
     @Override
-    public List<QueryResult> execute(Connection c, String sql) {
-        List<QueryResult> queryResults = new ArrayList<>();
+    public List<QueryResult> execute(Connection c, String sqlScript) {
         try (
-                Statement statement = c.createStatement()
+        Statement statement = c.createStatement();
         ) {
-            List<String> queries = parser.parse(sql);
-            for (String query: queries) {
-                ResultSet rs = statement.executeQuery(query);
-                QueryResult queryResult = new QueryResult();
+            List<String> queries = parser.parse(sqlScript);
+            return executeQueries(statement, queries);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<QueryResult> executeQueries(Statement statement, List<String> queries) {
+        List<QueryResult> queryResults = new ArrayList<>();
+        for (String query: queries) {
+            QueryResult queryResult = new QueryResult();
+            try {
+                statement.execute(query);
+                ResultSet rs = statement.getResultSet();
                 if (rs != null) {
                     queryResult.rows.addAll(processResultSet(rs));
                     rs.close();
                 }
-                queryResults.add(queryResult);
+                queryResult.errorMessage = "Query OK";
+            } catch (SQLException e) {
+                queryResult.errorMessage = e.getMessage();
             }
-
-        } catch (SQLException e) {
-            QueryResult qr = new QueryResult();
-            qr.errorCode = 1;
-            qr.errorMessage = e.getMessage();
-            queryResults.add(qr);
+            queryResults.add(queryResult);
         }
         return queryResults;
     }

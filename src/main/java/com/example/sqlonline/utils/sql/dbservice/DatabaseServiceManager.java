@@ -30,12 +30,18 @@ public class DatabaseServiceManager {
             connection = databaseService.connectToDatabase(databaseName, username, password);
             return connection;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            String connectionDetails = "Connection [version: " + versionId + ", database: "
+                    + databaseName + ", username: " + username + ", userPassword: " + password + "]";
+            throw new RuntimeException(e.getMessage() + connectionDetails);
         }
     }
 
     public List<String> getServicesIds() {
         return services.keySet().stream().toList();
+    }
+
+    public DatabaseService getDatabaseService(String serviceId) {
+        return services.get(serviceId);
     }
 
 }
