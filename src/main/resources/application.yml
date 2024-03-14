@@ -2,13 +2,13 @@ service:
   configurations:
 
     soqol1:
-      driver-jar-path: src/main/docker/distr/soqol_3.0-1_Linux_x86_64/soqol/bin/soqol-jdbc-2.0.1.jar
+      driver-jar-path: ${DRIVERS_DIR}/soqol1/soqol-jdbc-2.0.1.jar
       driver-class-name: ru.relex.soqol.jdbc.Driver
-      host: localhost
+      host: soqol301
       port: 2060
 
     soqol2:
-      driver-jar-path: ./src/main/docker/distr/soqol_3.1-night240305_Linux_x86_64/soqol/bin/soqol-jdbc-2.0.1.jar
+      driver-jar-path: ${DRIVERS_DIR}/soqol2/soqol-jdbc-2.0.1.jar
       driver-class-name: ru.relex.soqol.jdbc.Driver
-      host: localhost
+      host: soqol31night240305
       port: 2061

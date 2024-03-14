@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Configuration
 public class DatabaseServicesConfig {
-    ServiceInstanceInfos serviceInstanceInfos;
+    private final ServiceInstanceInfos serviceInstanceInfos;
 
     @Autowired
     public DatabaseServicesConfig(ServiceInstanceInfos serviceInstanceInfos) {
