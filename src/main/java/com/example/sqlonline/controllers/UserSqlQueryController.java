@@ -1,7 +1,8 @@
 package com.example.sqlonline.controllers;
 
-import com.example.sqlonline.utils.sql.SQLRunner;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
+import com.example.sqlonline.utils.sql.query.QueryResult;
+import com.example.sqlonline.utils.sql.query.SqlScriptRunner;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -10,25 +11,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 public class UserSqlQueryController {
-    private final SQLRunner sqlRunner;
+    private final DatabaseServiceManager databaseServiceManager;
+    private final SqlScriptRunner sqlScriptRunner;
     @Autowired
-    public UserSqlQueryController(SQLRunner sqlRunner) {
-        this.sqlRunner = sqlRunner;
+    public UserSqlQueryController(SqlScriptRunner sqlScriptRunner, DatabaseServiceManager databaseServiceManager) {
+        this.sqlScriptRunner = sqlScriptRunner;
+        this.databaseServiceManager = databaseServiceManager;
     }
     @PostMapping("/RunSql")
-    public String runQuery(@RequestParam("query") String query, HttpServletRequest request) {
-        String queryResult;
-        try {
-            String connectionUrl = getConnectionUrl((request.getSession()));
-            queryResult = sqlRunner.execute(connectionUrl, query);
-        } catch (Exception e) {
-            queryResult = e.getMessage();
-        }
-        request.getSession().setAttribute("QUERY_RESULT", queryResult);
-        //todo: query result should be update with page refresh
-        request.getSession().setAttribute("QUERY", query);
+    public String runQuery(@RequestParam("query") String query, HttpSession session) {
+        List<QueryResult> queryResults;
+
+        Connection connection = databaseServiceManager.getConnection(session);
+        queryResults = sqlScriptRunner.execute(connection, query);
+
+        //todo: query result should be updated on page refresh
+        session.setAttribute("QUERY", query);
+        session.setAttribute("QUERY_RESULT", queryResults);
         return "redirect:/ShowSql";
     }
 
@@ -36,25 +41,11 @@ public class UserSqlQueryController {
     public String show(Model model, HttpSession session) {
         //todo: add some nicer presentation of query results
         model.addAttribute("query", session.getAttribute("QUERY"));
-        model.addAttribute("queryResult", session.getAttribute("QUERY_RESULT"));
-        return "showSql";
-    }
+        Object q = session.getAttribute("QUERY_RESULT");
+        if (q == null)
+            q = new ArrayList<QueryResult>();
+        model.addAttribute("queryResults", q);
 
-    private String getConnectionUrl(HttpSession session) {
-        //todo: add more flexible mechanism of url creation, make it possible to work with other drivers
-        StringBuilder sb = new StringBuilder("jdbc:soqol://");
-        String version = (String) session.getAttribute("VERSION_ID");
-        String database = (String) session.getAttribute("DB_NAME");
-        String username = (String) session.getAttribute("USERNAME");
-        String password = (String) session.getAttribute("PASSWORD");
-        sb.append(username)
-                .append(":")
-                .append(password)
-                .append("@")
-                .append("localhost:2060/")
-                .append(database)
-                .append("?driverId=")
-                .append(version);
-        return sb.toString();
+        return "showSql";
     }
 }

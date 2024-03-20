@@ -1,0 +1,14 @@
+service:
+  configurations:
+
+    soqol1:
+      driver-jar-path: ${DRIVERS_DIR}/soqol1/soqol-jdbc-2.0.1.jar
+      driver-class-name: ru.relex.soqol.jdbc.Driver
+      host: soqol301
+      port: 2060
+
+    soqol2:
+      driver-jar-path: ${DRIVERS_DIR}/soqol2/soqol-jdbc-2.0.1.jar
+      driver-class-name: ru.relex.soqol.jdbc.Driver
+      host: soqol31night240305
+      port: 2061
