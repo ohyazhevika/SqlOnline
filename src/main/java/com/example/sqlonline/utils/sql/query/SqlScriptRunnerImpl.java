@@ -1,5 +1,7 @@
 package com.example.sqlonline.utils.sql.query;
 
+import com.example.sqlonline.dao.dto.QueryResult;
+import com.example.sqlonline.dao.dto.Table;
 import com.example.sqlonline.utils.sql.parser.SqlScriptParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ public class SqlScriptRunnerImpl implements SqlScriptRunner {
     @Override
     public List<QueryResult> execute(Connection c, String sqlScript) {
         try (
-        Statement statement = c.createStatement();
+        Statement statement = c.createStatement()
         ) {
             List<String> queries = parser.parse(sqlScript);
             return executeQueries(statement, queries);
@@ -36,7 +38,7 @@ public class SqlScriptRunnerImpl implements SqlScriptRunner {
                 statement.execute(query);
                 ResultSet rs = statement.getResultSet();
                 if (rs != null) {
-                    queryResult.rows.addAll(processResultSet(rs));
+                    queryResult.table = getTableFromResultSet(rs);
                     rs.close();
                 }
                 queryResult.errorMessage = "Query OK";
@@ -48,24 +50,30 @@ public class SqlScriptRunnerImpl implements SqlScriptRunner {
         return queryResults;
     }
 
-
-    private List<String> processResultSet(ResultSet rs) throws SQLException {
-        List<String> rows = new ArrayList<>();
-        if (rs == null) return rows;
-        ResultSetMetaData rsmd = rs.getMetaData();
-        int columnsNumber = rsmd.getColumnCount();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i <= columnsNumber; i++) {
-            sb.append(rsmd.getColumnName(i)).append("    ");
-        }
-        rows.add(sb.toString());
-        while(rs.next()) {
-            sb = new StringBuilder();
-            for (int i = 1; i <= columnsNumber; i++) {
-                sb.append(rs.getString(i)).append("    ");
+    private Table getTableFromResultSet (ResultSet resultSet) throws SQLException {
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        String[] columnNames = getColumnNamesArray(rsmd);
+        Table table = new Table(columnNames);
+        int columnsCnt = columnNames.length;
+        if (columnsCnt > 0) {
+            while(resultSet.next()) {
+                String[] rowValues = new String[columnsCnt];
+                for (int i = 0; i < columnsCnt; i++) {
+                   rowValues[i] = resultSet.getString(i + 1);
+                }
+                table.addRow(rowValues);
             }
-            rows.add(sb.toString());
         }
-        return rows;
+        return table;
     }
+
+    private String[] getColumnNamesArray(ResultSetMetaData rsmd) throws SQLException {
+        int columnsNumber = rsmd.getColumnCount();
+        String[] columnNames = new String[columnsNumber];
+        for (int i = 0; i < columnsNumber; i++) {
+            columnNames[i] = rsmd.getColumnName(i + 1);
+        }
+        return columnNames;
+    }
+
 }

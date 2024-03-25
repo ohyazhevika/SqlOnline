@@ -1,21 +1,22 @@
 package com.example.sqlonline.controllers;
 
 import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
-import com.example.sqlonline.utils.sql.query.QueryResult;
+import com.example.sqlonline.dao.dto.QueryResult;
 import com.example.sqlonline.utils.sql.query.SqlScriptRunner;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 public class UserSqlQueryController {
     private final DatabaseServiceManager databaseServiceManager;
     private final SqlScriptRunner sqlScriptRunner;
@@ -25,7 +26,7 @@ public class UserSqlQueryController {
         this.databaseServiceManager = databaseServiceManager;
     }
     @PostMapping("/RunSql")
-    public String runQuery(@RequestParam("query") String query, HttpSession session) {
+    public void runQuery(@RequestParam("query") String query, HttpSession session, HttpServletResponse response) throws IOException {
         List<QueryResult> queryResults;
 
         Connection connection = databaseServiceManager.getConnection(session);
@@ -34,18 +35,18 @@ public class UserSqlQueryController {
         //todo: query result should be updated on page refresh
         session.setAttribute("QUERY", query);
         session.setAttribute("QUERY_RESULT", queryResults);
-        return "redirect:/ShowSql";
+        response.sendRedirect("/ShowSql");
     }
 
     @GetMapping("/ShowSql")
-    public String show(Model model, HttpSession session) {
+    public List<QueryResult> show(HttpSession session) {
         //todo: add some nicer presentation of query results
-        model.addAttribute("query", session.getAttribute("QUERY"));
-        Object q = session.getAttribute("QUERY_RESULT");
+        //model.addAttribute("query", session.getAttribute("QUERY"));
+        ArrayList<QueryResult> q = (ArrayList<QueryResult>) session.getAttribute("QUERY_RESULT");
         if (q == null)
-            q = new ArrayList<QueryResult>();
-        model.addAttribute("queryResults", q);
+            q = new ArrayList<>();
+       // model.addAttribute("queryResults", q);
 
-        return "showSql";
+        return q;
     }
 }
