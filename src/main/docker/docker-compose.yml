@@ -11,12 +11,24 @@ services:
     depends_on:
       - soqol301
       - soqol31night240305
+      - redis
+  redis:
+    container_name: redis
+    image: redis:v1
+    build:
+      context: ./redis
+      dockerfile: ./Dockerfile
+    hostname: redis
+    ports:
+      - "6379:6379"
+
   soqol301:
     build:
       context: ./distr/soqol_3.0-1_Linux_x86_64
       dockerfile: ./Dockerfile
     ports:
       - "2060:2060"
+
   soqol31night240305:
     build:
       context: ./distr/soqol_3.1-night240305_Linux_x86_64
