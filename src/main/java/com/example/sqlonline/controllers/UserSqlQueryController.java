@@ -1,19 +1,13 @@
 package com.example.sqlonline.controllers;
 
+import com.example.sqlonline.dao.dto.UserSqlQuery;
 import com.example.sqlonline.utils.sql.dbservice.DatabaseServiceManager;
 import com.example.sqlonline.dao.dto.QueryResult;
 import com.example.sqlonline.utils.sql.query.SqlScriptRunner;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,28 +19,15 @@ public class UserSqlQueryController {
         this.sqlScriptRunner = sqlScriptRunner;
         this.databaseServiceManager = databaseServiceManager;
     }
-    @PostMapping("/RunSql")
-    public void runQuery(@RequestParam("query") String query, HttpSession session, HttpServletResponse response) throws IOException {
-        List<QueryResult> queryResults;
 
-        Connection connection = databaseServiceManager.getConnection(session);
-        queryResults = sqlScriptRunner.execute(connection, query);
+    @PostMapping("/sql/{version}")
+    public List<QueryResult> runQuery(@PathVariable(value="version") String version,
+                         @RequestBody UserSqlQuery userSqlQuery) {
 
-        //todo: query result should be updated on page refresh
-        session.setAttribute("QUERY", query);
-        session.setAttribute("QUERY_RESULT", queryResults);
-        response.sendRedirect("/ShowSql");
-    }
+        // todo: there has to be a different way of passing users' credentials to DatabaseServiceManager.
+        // todo: Connections shouldn't be handled by controller. There's to be some service for that.
+        Connection connection = databaseServiceManager.getConnection(version, userSqlQuery.userCredentials);
 
-    @GetMapping("/ShowSql")
-    public List<QueryResult> show(HttpSession session) {
-        //todo: add some nicer presentation of query results
-        //model.addAttribute("query", session.getAttribute("QUERY"));
-        ArrayList<QueryResult> q = (ArrayList<QueryResult>) session.getAttribute("QUERY_RESULT");
-        if (q == null)
-            q = new ArrayList<>();
-       // model.addAttribute("queryResults", q);
-
-        return q;
+        return sqlScriptRunner.execute(connection, userSqlQuery.sql);
     }
 }

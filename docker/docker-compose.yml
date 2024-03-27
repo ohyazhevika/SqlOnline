@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: app
+      dockerfile: app/Dockerfile
+    platform: linux/x86_64
+    ports:
+      - "8080:8080"
+    depends_on:
+      - soqol301
+      - soqol31night240305
+      - redis
+  redis:
+    container_name: redis
+    image: redis:v1
+    build:
+      context: redis
+      dockerfile: redis/Dockerfile
+    hostname: redis
+    ports:
+      - "6379:6379"
+
+  soqol301:
+    build:
+      context: distr/soqol_3.0-1_Linux_x86_64
+      dockerfile: distr/soqol_3.0-1_Linux_x86_64/Dockerfile
+    ports:
+      - "2060:2060"
+
+  soqol31night240305:
+    build:
+      context: distr/soqol_3.1-night240305_Linux_x86_64
+      dockerfile: distr/soqol_3.1-night240305_Linux_x86_64/Dockerfile
+    ports:
+      - "2061:2061"
+volumes:
+  sqldistr:
+    driver: local

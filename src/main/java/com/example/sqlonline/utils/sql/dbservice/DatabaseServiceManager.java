@@ -1,6 +1,6 @@
 package com.example.sqlonline.utils.sql.dbservice;
 
-import jakarta.servlet.http.HttpSession;
+import com.example.sqlonline.dao.dto.DbUserCredentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +17,15 @@ public class DatabaseServiceManager {
     public DatabaseServiceManager(Map<String, DatabaseService> services) {
         this.services = services;
     }
-    public Connection getConnection(HttpSession session) {
-        String versionId = (String) session.getAttribute("VERSION_ID");
-        if (versionId == null) throw new RuntimeException("No service version was chosen!");
+    public Connection getConnection(String versionId, DbUserCredentials userCredentials) {
         DatabaseService databaseService = services.get(versionId);
-
-        String databaseName = (String) session.getAttribute("DB_NAME");
-        String username = (String) session.getAttribute("USERNAME");
-        String password = (String) session.getAttribute("PASSWORD");
         Connection connection;
         try {
-            connection = databaseService.connectToDatabase(databaseName, username, password);
+            connection = databaseService.connectToDatabase(userCredentials);
             return connection;
         } catch (SQLException e) {
             String connectionDetails = "Connection [version: " + versionId + ", database: "
-                    + databaseName + ", username: " + username + ", userPassword: " + password + "]";
+                    + userCredentials.dbName + ", username: " + userCredentials.userName + ", userPassword: " + userCredentials.password + "]";
             throw new RuntimeException(e.getMessage() + connectionDetails);
         }
     }

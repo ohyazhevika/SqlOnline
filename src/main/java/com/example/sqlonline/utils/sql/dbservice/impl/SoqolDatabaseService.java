@@ -2,7 +2,7 @@ package com.example.sqlonline.utils.sql.dbservice.impl;
 
 
 import com.example.sqlonline.utils.sql.dbservice.DatabaseService;
-import com.example.sqlonline.utils.sql.dbservice.DbUserCredentials;
+import com.example.sqlonline.dao.dto.DbUserCredentials;
 import com.example.sqlonline.utils.sql.dbservice.DbUserCredentialsGenerator;
 
 import java.sql.Connection;
@@ -60,8 +60,8 @@ public class SoqolDatabaseService implements DatabaseService {
     }
 
     @Override
-    public Connection connectToDatabase(String databaseName, String userName, String password) throws SQLException {
-        String url = "jdbc:soqol://" + userName + ":" + password + "@" + host + "/" + databaseName;
+    public Connection connectToDatabase(DbUserCredentials dbUserCredentials) throws SQLException {
+        String url = "jdbc:soqol://" + dbUserCredentials.userName + ":" + dbUserCredentials.password + "@" + host + "/" + dbUserCredentials.dbName;
         return driver.connect(url, new Properties());
     }
 
@@ -69,7 +69,7 @@ public class SoqolDatabaseService implements DatabaseService {
         String url = serviceUrl + "/" + userCredentials.dbName;
         try (Connection c = driver.connect(url, new Properties())) {
             Statement s = c.createStatement();
-            s.execute("CREATE USER " + userCredentials.userName + " IDENTIFIED BY '" + userCredentials.userPassword + "'");
+            s.execute("CREATE USER " + userCredentials.userName + " IDENTIFIED BY '" + userCredentials.password + "'");
             s.execute("GRANT DBA TO " + userCredentials.userName);
         } catch (SQLException e) {
             throw new RuntimeException(e);
